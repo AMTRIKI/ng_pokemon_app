@@ -1,4 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { TemplateBindingParseResult } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { Pokemon } from './pokemon';
@@ -20,6 +21,16 @@ export class PokemonService {
     return this.http.get<Pokemon>(`api/pokemons/${pokemonId}`).pipe(
       tap(pokemon=>this.log(pokemon)),
       catchError((error)=>this.handleError(error, undefined))
+    );
+  }
+
+  searchPokemonList(term:string):Observable<Pokemon[]>{
+    // Si l'utilisateur tape moins de 2 caractères, on ne va rien renvoyer
+    if(term.length <=1)
+    return of([]);
+    return this.http.get<Pokemon[]>(`api/pokemons/?name=${term}`).pipe(
+      tap(response=>this.log(response)),
+      catchError((error)=>this.handleError(error, []))
     );
   }
 
